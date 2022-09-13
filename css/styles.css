@@ -8,3 +8,11 @@
 h1{
     font-family: 'arial', sans-serif;
 }
+
+img{
+    border: 3px solid rgb(239, 221, 179);
+    border-radius: 3px;
+    width: 200px;
+    height: 200px;
+}
+

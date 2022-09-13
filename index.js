@@ -1,30 +1,93 @@
-alert('Hello. Welcome to Horizon Supply Co: Post Human - Survival Horror Collection')
+// alert('Hello. Welcome to Horizon Supply Co: Post Human - Survival Horror Collection')
 
-let selectedProduct = parseInt(prompt('Select the product you want to buy: \n 1) Basic tee \n 2) Nomad Hoodie \n 3) Black Jewelry \n 4) $100 Giftcard \n 5) Post Human: Survival Horror CD'))
+// let selectedProduct = parseInt(prompt('Select the product you want to buy: \n 1) Basic tee \n 2) Nomad Hoodie \n 3) Black Jewelry \n 4) $100 Giftcard \n 5) Post Human: Survival Horror CD'))
 let shoppingTotal = 0
 let continueShopping = true
 let shoppingDecision
 let products = []
 let shoppingCart = []
+const selectTag = document.getElementById('product__list')
 
-function Product(name, price, code, quantity, id) {
-    this.name = name;
-    this.price = price;
-    this.code = code;
-    this.quantity = quantity;
-    this.id = id;
+class Product{
+    constructor(name, price, code, quantity, id, img){
+        this.name = name
+        this.price = price
+        this.code = code
+        this.quantity = quantity
+        this.id = id
+        this.img = img
+
+        this.changeId = (newId) => {
+            this.id = newId
+        }
+        this.soldUnits = (sellUnits) => {
+            this.quantity = this.quantity - sellUnits
+        }
+        this.addUnits = (addUnits) =>{
+            this.quantity = this.quantity + addUnits
+        }
+        this.promoPrice = (newPrice) => {
+            this.price = this.price * 0.5
+        }
+    }
+    viewProducts(){
+        const card = `
+        <div class = "card">
+                <p>${this.name}</p>
+            <div>
+                <img class="product-image" src=${this.img} alt="Tshirt Image"/>
+            </div>
+            <div>
+                <p>${'$' + this.price}</p>
+            </div>
+            <div class="btn-container">
+                <button id=${this.id} class="btnAdd">Add to cart</button>
+            </div>
+        </div>
+    `
+    const container = document.getElementById('container')
+    container.innerHTML += card
+    }
+    addEvent(){
+        const btnAdd = document.getElementById(this.id)
+        const chosenProduct = products.find(product => product.id == this.id)
+        btnAdd.addEventListener('click', () => addToCart(chosenProduct))
+    }
 }
 
-const tshirt = new Product('Basic Tee', 25, 001, 150, 1)
-products.push(tshirt)
-const hoodie = new Product('Nomad Hoodie', 75, 002, 75, 2)
-products.push(hoodie)
-const jewelry = new Product('Nomad Jewelry Collection', 50, 003, 50, 3)
-products.push(jewelry)
-const giftcard = new Product('$100 giftcard', 100, 004, 25, 4)
-products.push(giftcard)
-const record = new Product('Post Human: Survival Horror', 50, 005, 250, 5)
-products.push(record)
+const tshirt = new Product('Basic Tee', 25, 001, 150, 1, './img/tshirt.png')
+tshirt.promoPrice()
+const hoodie = new Product('Nomad Hoodie', 75, 002, 75, 2, './img/hoodie.jpg')
+hoodie.soldUnits(10)
+const jewelry = new Product('Nomad Jewelry Collection', 50, 003, 50, 3, './img/jewelry.png')
+const giftcard = new Product('$100 giftcard', 100, 004, 25, 4, './img/giftcard.jpg')
+giftcard.addUnits(10)
+const record = new Product('Post Human: Survival Horror', 50, 005, 250, 5, './img/phsh.jpg')
+record.changeId('PHSH010')
+
+products.push(tshirt, hoodie, jewelry, giftcard, record)
+console.log(products)
+
+products.forEach(e => {
+    e.viewProducts()
+})
+
+products.forEach(e => {
+    e.addEvent()
+})
+
+function addToCart(product){
+    const addingToCart = shoppingCart.find(prod => prod.id == product.id)
+
+    if(!addingToCart){
+        shoppingCart.push({...product, totalQuantity: 1})
+} else{
+    const filterCart = shoppingCart.filter(prod => prod.id != product.id)
+    shoppingCart = [...filterCart, {...addingToCart, totalQuantity: addingToCart.totalQuantity +1}
+    ]
+}
+console.log(shoppingCart)
+}
 
 while (continueShopping === true) {
     if (selectedProduct === 1) {
@@ -49,12 +112,6 @@ while (continueShopping === true) {
     }
 }
 
-const stock = products.map(element => element.code)
-console.log(stock)
-
-const availableStock = products.filter(element => element.name !== 'Post Human: Survival Horror')
-console.log(availableStock)
-
 for (const iterator of shoppingCart) {
     shoppingTotal = shoppingTotal + iterator.price
 }
@@ -72,7 +129,6 @@ function shippingCost(totalAmount) {
         shipping = 20
     }
 
-    let shippingTotal = totalAmount + shipping
     totalAmount = totalAmount + shipping
     return totalAmount
 }
