@@ -67,13 +67,6 @@ while (continueShopping === true) {
     }
 }
 
-
-// const stock = products.map(element => element.code)
-// console.log(stock)
-
-// const availableStock = products.filter(element => element.name !== 'Post Human: Survival Horror')
-// console.log(availableStock)
-
 for (const iterator of shoppingCart) {
     shoppingTotal = shoppingTotal + iterator.price
 }
